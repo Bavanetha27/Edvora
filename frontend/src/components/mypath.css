@@ -1,0 +1,103 @@
+.mypath-container {
+    text-align: center;
+    padding: 20px;
+    height:170vh;
+    margin-bottom: 20px;
+    background-color: #f6f6f6;
+  }
+  
+  .title {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .subtitle {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    color: gray;
+  }
+  
+  .level-path {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    position: relative;
+  }
+  
+  .level-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+  }
+  
+  .connector {
+    width: 4px;
+    height: 60px;
+    background: linear-gradient(to bottom, #0033ff, #5963e4);
+    margin-bottom: -10px;
+  }
+  
+  .level {
+    border-radius: 10px;
+    border: 3px solid #574ff4;
+    background-color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    position: relative;
+  }
+  
+  .level:hover {
+    transform: scale(1.05);
+  }
+  
+  .level.active {
+    background-color: #684ff4;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .level.locked {
+    background-color: gray;
+    color: white;
+    border: 3px solid #888;
+    cursor: not-allowed;
+  }
+  
+.level-details {
+    position: absolute;
+    top: 0;
+    width:  500px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+    transition: all 0.3s ease;
+}
+.level-wrapper:nth-child(odd) .level-details {
+    left: calc(100% + 30px);
+}
+  
+.level-wrapper:nth-child(even) .level-details {
+    right: calc(100% + 30px); 
+}
+  
+  
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+}
+  
