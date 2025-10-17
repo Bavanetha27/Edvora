@@ -5,27 +5,34 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const protect = async (req, res, next) => {
-  let token = null;
-  const authHeader = req.headers.authorization;
-
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    token = authHeader.split(" ")[1];
-  }
-
-  if (!token) return res.status(401).json({ message: "Not authorized" });
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
-    if (!user) return res.status(401).json({ message: "User not found" });
+    // 1Get token from HTTP-only cookie
+    const token = req.cookies?.token;
+    if (!token) {
+      return res.status(401).json({ message: "Not authorized, token missing" });
+    }
 
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Get user from DB
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    // Attach user to request object
     req.user = user;
     next();
   } catch (err) {
     console.error(err);
+
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token expired, please login again" });
+    }
+
     res.status(401).json({ message: "Token invalid or expired" });
   }
 };
 
-// Export in CommonJS style
 module.exports = { protect };

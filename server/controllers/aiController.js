@@ -13,7 +13,7 @@ dotenv.config();
 const suggestCareer = async (req, res) => {
   try {
     const { aptitude, softSkills } = req.body;
-    const user = req.user; // injected by protect middleware
+    const user = req.user; 
 
     // build prompt for the LLM
     const prompt = `

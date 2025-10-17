@@ -7,6 +7,15 @@ dotenv.config();
 
 const JWT_EXPIRES = "7d";
 
+const generateToken = (user) => {
+  return jwt.sign(
+    { id: user._id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: JWT_EXPIRES }
+  );
+};
+
+
 const signup = async (req, res) => {
   try {
     const { name, email, password, role, experience, domain } = req.body;
@@ -26,9 +35,8 @@ const signup = async (req, res) => {
       domain,
     });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: JWT_EXPIRES,
-    });
+    const token = generateToken(user);
+
     const safeUser = {
       id: user._id,
       name: user.name,
@@ -37,7 +45,14 @@ const signup = async (req, res) => {
       experience: user.experience,
       domain: user.domain,
     };
-    res.status(201).json({ token, user: safeUser });
+    res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS only
+      sameSite: "Strict",
+      maxAge: 60 * 60 * 1000, // 1 hour
+    })
+    .status(201).json({ user: safeUser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -53,10 +68,9 @@ const login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: JWT_EXPIRES,
-    });
-    const safeUser = {
+    const token = generateToken(user);
+
+    const loggedUser = {
       id: user._id,
       name: user.name,
       email: user.email,
@@ -64,22 +78,40 @@ const login = async (req, res) => {
       experience: user.experience,
       domain: user.domain,
     };
-    res.json({ token, user: safeUser });
+    res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 60 * 60 * 1000,
+    })
+    .status(200)
+    .json({ user: loggedUser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+const logout = async (req, res) => {
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    })
+    .status(200)
+    .json({ message: "Logged out successfully" });
+};
+
+
 const getDashboard = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = req.user; 
 
-    // derive progress percentage (example: number of quizzes completed out of 1)
-    const progress = Math.min(100, user.quizResults.length > 0 ? 100 : 0);
+    const progress = Math.min(100, user.quizResults?.length ? 100 : 0);
 
-    const latestRecommendation = user.quizResults.length
+    const latestRecommendation = user.quizResults?.length
       ? user.quizResults[user.quizResults.length - 1].recommendation
       : null;
 
@@ -94,7 +126,7 @@ const getDashboard = async (req, res) => {
       },
       progress,
       latestRecommendation,
-      quizHistory: user.quizResults,
+      quizHistory: user.quizResults || [],
     });
   } catch (err) {
     console.error(err);
@@ -102,5 +134,6 @@ const getDashboard = async (req, res) => {
   }
 };
 
+
 // Export all functions in CommonJS style
-module.exports = { signup, login, getDashboard };
+module.exports = { signup, login, logout, getDashboard };

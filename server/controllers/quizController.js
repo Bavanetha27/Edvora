@@ -7,7 +7,7 @@ const User = require("../models/User");
 const submitQuiz = async (req, res) => {
   try {
     const { aptitude, softSkills } = req.body;
-    const user = await User.findById(req.user._id);
+    const user = req.user;
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const newResult = {
