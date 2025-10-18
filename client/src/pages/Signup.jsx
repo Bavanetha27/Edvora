@@ -38,7 +38,7 @@ const Signup = () => {
       <div className="max-w-5xl w-full bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden">
         
         {/* Left side image section */}
-        <div className="md:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-8">
+        <div className="md:w-1/2 bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center p-8">
           <div className="text-center text-white space-y-6">
             <img
               src={signupImg}
@@ -64,7 +64,7 @@ const Signup = () => {
               placeholder="Full Name"
               value={form.name}
               onChange={handleChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
               required
             />
 
@@ -74,7 +74,7 @@ const Signup = () => {
               placeholder="Email"
               value={form.email}
               onChange={handleChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
               required
             />
 
@@ -84,7 +84,7 @@ const Signup = () => {
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
               required
             />
 
@@ -93,7 +93,7 @@ const Signup = () => {
                 name="role"
                 value={form.role}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
               >
                 <option>Student</option>
                 <option>Professional</option>
@@ -105,7 +105,7 @@ const Signup = () => {
                 placeholder="Experience (years)"
                 value={form.experience}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
               />
             </div>
 
@@ -114,13 +114,13 @@ const Signup = () => {
               placeholder="Domain (e.g., Software, Marketing)"
               value={form.domain}
               onChange={handleChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
             />
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition"
             >
               {loading ? "Please wait..." : "Sign Up"}
             </button>
@@ -129,7 +129,7 @@ const Signup = () => {
           <p className="text-center text-gray-500 mt-6">
             Already have an account?{" "}
             <span
-              className="text-blue-600 hover:underline cursor-pointer"
+              className="text-purple-600 hover:underline cursor-pointer"
               onClick={() => navigate("/login")}
             >
               Login

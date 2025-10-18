@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import loginImg from "../assets/login.png";
 import API from "../services/api";
@@ -6,9 +6,15 @@ import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setUserDetails } = useContext(AuthContext);
+  const { user, setUserDetails } = useContext(AuthContext);
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,7 +23,9 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await API.post("/auth/login", form, { withCredentials: true });
+      const res = await API.post("/auth/login", form, {
+        withCredentials: true,
+      });
       setUserDetails(res.data.user);
       alert("Login successful!");
       navigate("/dashboard");
@@ -33,7 +41,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-4">
       <div className="max-w-5xl w-full bg-white rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden">
         {/* Left side image */}
-        <div className="md:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-8">
+        <div className="md:w-1/2 bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center p-8">
           <div className="text-center text-white space-y-6">
             <img
               src={loginImg}
@@ -60,7 +68,7 @@ const Login = () => {
               placeholder="Email"
               value={form.email}
               onChange={handleChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
               required
             />
 
@@ -70,14 +78,14 @@ const Login = () => {
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
               required
             />
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition"
             >
               {loading ? "Please wait..." : "Login"}
             </button>
@@ -86,7 +94,7 @@ const Login = () => {
           <p className="text-center text-gray-500 mt-6">
             Don’t have an account?{" "}
             <span
-              className="text-blue-600 hover:underline cursor-pointer"
+              className="text-purple-600 hover:underline cursor-pointer"
               onClick={() => navigate("/signup")}
             >
               Sign up

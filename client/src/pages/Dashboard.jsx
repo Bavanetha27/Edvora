@@ -5,7 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, setUser, logoutUser } = useContext(AuthContext); // use context
+  const { user, setUser, logoutUser } = useContext(AuthContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 

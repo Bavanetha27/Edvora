@@ -48,23 +48,23 @@ const Navbar = () => {
   return (
     <nav className="flex justify-between items-center bg-white shadow-md px-8 py-4 sticky top-0 z-50">
       {/* Brand Name */}
-      <Link to="/" className="text-2xl font-bold text-blue-600">
-        Career<span className="text-gray-800">Path</span>AI
+      <Link to="/" className="text-2xl font-bold text-purple-600">
+        Ed<span className="text-gray-800">vor</span>a
       </Link>
 
       {/* Navigation Links */}
       <div className="space-x-6 text-gray-700 font-medium flex items-center">
-        <Link to="/" className="hover:text-blue-600 transition">
+        <Link to="/" className="hover:text-purple-600 transition">
           Home
         </Link>
 
         {/* Show these only when NOT logged in */}
         {!user && (
           <>
-            <Link to="/signup" className="hover:text-blue-600 transition">
+            <Link to="/signup" className="hover:text-purple-600 transition">
               Signup
             </Link>
-            <Link to="/login" className="hover:text-blue-600 transition">
+            <Link to="/login" className="hover:text-purple-600 transition">
               Login
             </Link>
           </>
@@ -75,21 +75,21 @@ const Navbar = () => {
           <>
             <button
               onClick={() => handleProtectedClick("/quiz")}
-              className="hover:text-blue-600 transition"
+              className="hover:text-purple-600 transition"
             >
               Quiz
             </button>
 
             <button
               onClick={() => handleProtectedClick("/suggestion")}
-              className="hover:text-blue-600 transition"
+              className="hover:text-purple-600 transition"
             >
               Suggestion
             </button>
 
             <button
               onClick={() => handleProtectedClick("/dashboard")}
-              className="hover:text-blue-600 transition"
+              className="hover:text-purple-600 transition"
             >
               Dashboard
             </button>

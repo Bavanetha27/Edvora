@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Quiz from "./pages/Quiz";
 import Dashboard from "./pages/Dashboard";
 import CareerSuggestion from "./pages/CareerSuggestion";
+import Footer from "./components/Footer";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
+      <Footer />
     </div>
   );
 }
