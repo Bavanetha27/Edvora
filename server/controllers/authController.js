@@ -34,25 +34,7 @@ const signup = async (req, res) => {
       experience,
       domain,
     });
-
-    const token = generateToken(user);
-
-    const safeUser = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      experience: user.experience,
-      domain: user.domain,
-    };
-    res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // HTTPS only
-      sameSite: "Strict",
-      maxAge: 60 * 60 * 1000, // 1 hour
-    })
-    .status(201).json({ user: safeUser });
+    res.status(201);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
