@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [curruser, setUser] = useState(null);
+  const { user, logoutUser } = useContext(AuthContext);
 
   // Check if user is logged in by calling dashboard endpoint
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const res = await API.get("/auth/dashboard"); // cookie is sent automatically
+        const res = await API.get("/auth/dashboard");
         setUser(res.data.user);
       } catch (err) {
         setUser(null);
@@ -24,8 +26,8 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await API.post("/auth/logout"); // clear cookie
-      setUser(null); // reset state
+       // clear cookie
+      await logoutUser();
       alert("Logged out successfully!");
       navigate("/login");
     } catch (err) {

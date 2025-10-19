@@ -1,5 +1,6 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect } from "react";
+import API from "../services/api";
 
 export const AuthContext = createContext();
 
@@ -14,7 +15,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Clear user on logout
-  const logoutUser = () => {
+  const logoutUser =async () => {
+    await API.post("/auth/logout");
     setUser(null);
     localStorage.removeItem("user");
   };

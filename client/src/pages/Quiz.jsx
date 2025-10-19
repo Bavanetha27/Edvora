@@ -1,11 +1,14 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SectionCards from '../components/SectionCards';
 import QuestionList from '../components/QuestionList';
 import API from '../services/api';
 import { AuthContext } from "../context/AuthContext";
 
 const Quiz = () => {
-  const { user } = useContext(AuthContext); // get user from context
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate(); 
+
   const [activeSection, setActiveSection] = useState(null);
   const [activeCard, setActiveCard] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -36,38 +39,48 @@ const Quiz = () => {
   };
 
   const handleSubmitQuiz = async (answers) => {
-    console.log('Current user state:', user); // Debug log
     if (!user?.id) {
-      console.log('User ID missing in context'); // Debug log
       alert("User not logged in");
       return;
     }
 
+    // Calculate score
+    let correct = 0;
+    questions.forEach((q) => {
+      const selected = answers[q.id];
+      if (q.answerIndex !== undefined && selected === q.options[q.answerIndex]) {
+        correct += 1;
+      }
+    });
+
     try {
+      // Map frontend section to backend field
+      const sectionMap = {
+        aptitude: "aptitude",
+        soft: "softSkills", // make sure this matches backend
+        softSkills: "softSkills" // optional alias
+      };
       const payload = {
-        userId: user.id, // use user id from context
-        [activeSection]: {
-          [activeCard]: answers,
-        },
+        userId: user.id,
+        section: sectionMap[activeSection] || activeSection,
+        score: correct,
       };
 
-      const resp = await API.post('/quiz/submit', payload, { withCredentials: true });
-      const saved = resp.data.quizResult;
+      console.log("Submitting payload:", payload);
+      await API.post('/quiz/submit', payload, { withCredentials: true });
 
-      // calculate score
-      let correct = 0;
-      questions.forEach((q) => {
-        if (q.answerIndex !== undefined) {
-          const selected = answers[q.id];
-          if (selected === q.options[q.answerIndex]) correct += 1;
-        }
-      });
-
+      // Show modal with score
       setScoreModal({ score: correct, total: questions.length });
     } catch (err) {
       console.error(err);
       alert('Failed to submit quiz.');
     }
+  };
+
+  const handleCloseScoreModal = () => {
+    setScoreModal(null);
+    handleBackToSections(); // reset quiz state
+    navigate(-1); // go back to previous page
   };
 
   return (
@@ -90,7 +103,6 @@ const Quiz = () => {
           </div>
         )}
 
-        {/* Score Modal */}
         {scoreModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
             <div className="bg-white p-6 rounded-xl text-center shadow-xl max-w-sm">
@@ -99,7 +111,7 @@ const Quiz = () => {
                 You scored {scoreModal.score} out of {scoreModal.total}
               </p>
               <button
-                onClick={() => setScoreModal(null)}
+                onClick={handleCloseScoreModal}
                 className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg"
               >
                 Close

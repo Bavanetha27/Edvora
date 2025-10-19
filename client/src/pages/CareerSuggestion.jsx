@@ -1,74 +1,89 @@
-import React, { useEffect, useState, useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import API from "../services/api";
+import React, { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const CareerSuggestion = () => {
-  const location = useLocation();
+  const { user, logoutUser } = useContext(AuthContext);
   const navigate = useNavigate();
-  const { user, loadUser, logoutUser } = useContext(AuthContext);
-
-  const [recommendation, setRecommendation] = useState(location.state?.recommendation || null);
-  const [loading, setLoading] = useState(false);
+  const [recommendation, setRecommendation] = useState(null);
 
   useEffect(() => {
-    const fetchRecommendation = async () => {
-      if (!recommendation) {
-        setLoading(true);
-        try {
-          const res = await API.get("/auth/dashboard"); // cookie sent automatically
-          setRecommendation(res.data.latestRecommendation);
+    if (!user) {
+      alert("You must be logged in to see career suggestions.");
+      logoutUser();
+      navigate("/login");
+      return;
+    }
 
-          // update user in context if not loaded
-          if (!user) loadUser();
-        } catch (err) {
-          console.error(err);
-          alert("Session expired or not logged in. Redirecting to login.");
-          await logoutUser();
-          navigate("/login");
-        } finally {
-          setLoading(false);
-        }
+    if (user.recommendation?.text) {
+      try {
+        // Remove backticks and optional language identifier (like ```json)
+        const cleanedText = user.recommendation.text
+          .replace(/^```json\s*/, "")
+          .replace(/```$/, "")
+          .trim();
+
+        const parsedRecommendation = JSON.parse(cleanedText);
+        setRecommendation(parsedRecommendation);
+      } catch (err) {
+        console.error("Failed to parse recommendation JSON:", err);
+        setRecommendation(null);
       }
-    };
+    }
+  }, [user, navigate, logoutUser]);
 
-    fetchRecommendation();
-  }, [recommendation, navigate, user, loadUser, logoutUser]);
 
-  if (loading) return <div>Loading...</div>;
-  if (!recommendation) return <div>No recommendation available yet. Take the quiz first.</div>;
-
-  // If recommendation is a plain string
-  if (typeof recommendation === "string") {
-    return <pre>{recommendation}</pre>;
-  }
+  if (!user) return null; // optional: show nothing while redirecting
+  if (!recommendation) return <div>No recommendation available yet.</div>;
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Career Suggestions</h2>
-      <pre className="bg-gray-100 p-2 rounded mb-4">{JSON.stringify(recommendation, null, 2)}</pre>
 
-      {recommendation.top3 && (
+      {(recommendation.top5 || recommendation.top3) && (
         <div>
-          {recommendation.top3.map((c, idx) => (
+          {(recommendation.top5 || recommendation.top3).map((c, idx) => (
             <div key={idx} className="border p-4 mb-4 rounded shadow-sm">
               <h3 className="text-xl font-semibold">{c.title}</h3>
               <p><strong>Why:</strong> {c.why}</p>
-              <p><strong>Key Skills:</strong> {Array.isArray(c.keySkills) ? c.keySkills.join(", ") : c.keySkills}</p>
+              <p>
+                <strong>Key Skills:</strong>{" "}
+                {Array.isArray(c.keySkills) ? c.keySkills.join(", ") : c.keySkills}
+              </p>
+
               <p><strong>Roadmap:</strong></p>
               <ol className="list-decimal list-inside">
                 {(c.roadmap || []).map((step, i) => <li key={i}>{step}</li>)}
               </ol>
-              <p><strong>Sample Courses:</strong></p>
+
+              <p><strong>Courses:</strong></p>
               <ul className="list-disc list-inside">
-                {(c.sampleCourses || []).map((course, i) => <li key={i}>{course}</li>)}
+                {(c.courses || []).map((course, i) => (
+                  <li key={i}>
+                    <a
+                      href={course.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      {course.name} ({course.platform})
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           ))}
         </div>
       )}
+
+      {recommendation.recommendedAssessment && (
+        <div className="mt-6 p-4 bg-blue-50 border rounded">
+          <h4 className="font-semibold">Next Step:</h4>
+          <p>{recommendation.recommendedAssessment}</p>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default CareerSuggestion;
