@@ -17,6 +17,7 @@ app.use(cookieParser());
 //CORS middleware BEFORE routes
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://edvora-sigma-two.vercel.app/",
 ];
 
 app.use(
