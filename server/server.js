@@ -20,27 +20,23 @@ const allowedOrigins = [
   "https://edvora-sigma-two.vercel.app",
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-//handle preflight requests globally
-app.options("*", cors({
-  origin: allowedOrigins,
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log("Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-}));
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+// Apply CORS for all routes, including preflight
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Routes
 app.use("/auth", authRoutes);
